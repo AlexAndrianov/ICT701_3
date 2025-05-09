@@ -48,7 +48,7 @@ class SPECIALIZATION(Enum):
 # ------------------------- Classes section --------------------------------------
 
 class Base:
-    # constructor
+    """Base class for common ID and system reference."""
     def __init__(self, fms: "FitnessManagementSystem"):
         self.uuid = next_id()
         self.fms = fms
@@ -65,7 +65,7 @@ class Base:
 
 
 class Member(Base):
-    # constructor
+    """Represents a fitness club member."""
     def __init__(self, fms: "FitnessManagementSystem", name: str,  age: int, 
                  membership_type: MEMBERSHIP_TYPE, fitness_goals: FITNESS_GOAL):  
         super().__init__(fms)   
@@ -108,7 +108,7 @@ class Member(Base):
 
 
 class Trainer(Base):
-    # constructor
+    """Represents a fitness trainer."""
     def __init__(self, fms: "FitnessManagementSystem", name: str, specialization: SPECIALIZATION):
         super().__init__(fms)
         self.name = name
@@ -131,7 +131,7 @@ class Trainer(Base):
 
 
 class FitnessClass(Base):
-    # constructor
+    """Represents a scheduled fitness class."""
     def __init__(self, fms: "FitnessManagementSystem", name: str, trainer: Trainer, 
                  capacity: int, schedule: datetime):
         super().__init__(fms)
@@ -177,14 +177,27 @@ class FitnessClass(Base):
  
 
 class Transaction(Base):
-    # constructor
+    """Represents a payment transaction."""
     def __init__(self, fms: "FitnessManagementSystem", member: Member, amount_paid: float, 
                  paymant_date: datetime, membership_type: MEMBERSHIP_TYPE):
         super().__init__(fms)
         self.member = member
+
+        if amount_paid <= 0:
+            raise ValueError(f"The paiment should be positive value")
+
         self.amount_paid = amount_paid
         self.payment_date = paymant_date
         self.membership_type = membership_type
+    
+    def generate_receipt(self):
+        return (
+            f"Receipt for Transaction #{self.ID}\n"
+            f"Member: {self.member.Name}\n"
+            f"Membership: {self.membership_type.name} (${self.amount_paid})\n"
+            f"Date: {self.payment_date.strftime('%Y-%m-%d')}\n"
+            f"Amount Paid: ${self.amount_paid}"
+        )
     
     @property
     def Member(self):
@@ -204,14 +217,14 @@ class Transaction(Base):
 
 
 class FitnessManagementSystem:
-    # constructor
+    """Central management class for all members, trainers, classes, and transactions."""
     def __init__(self):
         self.members = {}
         self.trainers = {}
         self.classes = {}
         self.transatcions = {}
     
-    # members
+    # ----- Member Management -----
     @property
     def Members(self):
         return self.members
@@ -230,7 +243,13 @@ class FitnessManagementSystem:
         for cls in self.classes.values():
             cls.cancel_booking(member)
     
-    # trainers
+    def view_member_progress(self, member_id):
+        member = self.members.get(member_id)
+        if not member:
+            return None
+        return member.progresses
+    
+    # ----- Trainer Management -----
     @property
     def Trainers(self):
         return self.trainers
@@ -246,7 +265,7 @@ class FitnessManagementSystem:
             if cls.trainer == trainer:
                  cls.trainer = None
     
-    # classes
+    # ----- Class Management -----
     @property
     def Classes(self):
         return self.classes
@@ -257,9 +276,12 @@ class FitnessManagementSystem:
         self.classes[new_class.ID] = new_class
         return new_class
     
-    #reports
+    # ----- Transactions -----
+    def Transactions(self):
+        return self.transatcions
+
     def process_payment(self, member: Member, amount_paid: float, service: MEMBERSHIP_TYPE): 
-        new_transaction = Transaction(self, member, amount_paid, datetime.now(), service)
+        new_transaction = Transaction(self, member, amount_paid, datetime.datetime.now(), service)
         self.transatcions[new_transaction.ID] = new_transaction
         return new_transaction
     

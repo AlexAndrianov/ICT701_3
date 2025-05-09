@@ -5,6 +5,7 @@ import datetime
 class SystemView:
     @staticmethod
     def get_non_empty_string(prompt: str):
+        """Prompts the user to enter a non-empty string."""
         print(prompt)
         while True:
             res_str = input(f"Input non empty string: ")
@@ -13,6 +14,7 @@ class SystemView:
     
     @staticmethod
     def get_int_input(min_v: int, max_v: int, prompt: str):
+        """Prompts the user for an integer input within a specified range."""
         print(prompt)
         
         while True:
@@ -25,6 +27,7 @@ class SystemView:
 
     @staticmethod
     def get_enum_input(enum_cls, prompt: str):
+        """Displays enum options and lets user pick one."""
         print(prompt)
         for item in enum_cls:
             print(f"{item.value}: {item.name}")
@@ -45,6 +48,7 @@ class SystemView:
 
     @staticmethod
     def get_date_input(prompt: str):
+        """Prompts the user for a valid date input in YYYY-MM-DD format."""
         print(prompt)
         while True:
             date_str = input("Enter date (YYYY-MM-DD): ")
@@ -56,6 +60,7 @@ class SystemView:
 
     @staticmethod
     def get_uuid():
+        """Prompts for an integer ID."""
         while True:
             try:
                 return int(input(f"Enter an int id: "))         
@@ -64,6 +69,7 @@ class SystemView:
 
     @staticmethod
     def get_trainer(system: FitnessManagementSystem):
+        """Fetches a trainer by ID from the system."""
         print("Enter a trainer ID")
 
         while True:
@@ -76,6 +82,7 @@ class SystemView:
     
     @staticmethod
     def get_member(system: FitnessManagementSystem):
+        """Fetches a member by ID from the system."""
         print("Enter a member ID")
 
         while True:
@@ -88,6 +95,7 @@ class SystemView:
 
     @staticmethod
     def get_class(system: FitnessManagementSystem):
+        """Fetches a fitness class by ID from the system."""
         print("Enter a class ID")
 
         while True:
